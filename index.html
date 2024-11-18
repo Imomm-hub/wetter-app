@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wetterabfrage</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            padding: 20px;
+           color: white;
+            background:url(./128600-wetter-nacht-raum-himmel-horizont-1920x1080.jpg) ;
+            opacity: 90%;
+            text-align: center;
+        }
+        #weather-output {
+            margin-top: 10px;
+            color: white;
+            width: 500px;
+            text-align: center;
+       
+        }
+        .displayWeather{
+            text-align: center;
+        }
+        button{
+            width: 40%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+        }
+        h1{
+            width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+   
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Wetterabfrage</h1>
+        <div class="form-group">
+            <label for="city-input">Stadt eingeben</label> 
+            <input type="text" class="form-control" id="city-input" placeholder="Stadt eingeben" onkeydown="handleEnter(event)">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="fetchWeather()">Wetter abrufen</button>
+        <div id="weather-output" class="alert alert-info mt-3" style="display: none;"></div>
+    </div>
+
+    <script>
+        function handleEnter(event) {
+    // Prüfen, ob die Enter-Taste (Keycode 13) gedrückt wurde
+    if (event.key === 'Enter') {
+        fetchWeather();
+    }
+}
+        function fetchWeather() {
+            const city = document.getElementById('city-input').value;
+            const apiKey = 'bab281d79e5f1e9755a68d754cc313e7'; // API-Schlüssel hier einfügen
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=de`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Netzwerkantwort war nicht ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayWeather(data);
+                })
+                .catch(error => console.error('Fehler:', error));
+        }
+        let weatherImage = '';
+
+        if (weatherDescription.includes('klar')) {
+            weatherImage = 'sonne.jpg';  // Bild für sonniges Wetter
+        } else if (weatherDescription.includes('wolken')) {
+            weatherImage = 'wolkig.jpg'; // Bild für bewölktes Wetter
+        } else if (weatherDescription.includes('regen')) {
+            weatherImage = 'regen.jpg';  // Bild für regnerisches Wetter
+        } else if (weatherDescription.includes('foggy')) {
+            weatherImage = 'foggy.jpg';  // Bild für nebliges Wetter
+        } else if (weatherDescription.includes('schnee')) {
+            weatherImage = 'winter.jpg';  // Bild für schneebedecktes Wetter
+        } else {
+            weatherImage = 'default.jpg'; // Fallback für unbekannte Wetterbedingungen
+        }
+
+        const weatherImageHTML = `<img src="images/${weatherImage}" alt="${weatherDescription}" style="width: 100px; height: 100px;">`;
+        function displayWeather(data) {
+            const weatherOutput = document.getElementById('weather-output');
+            if (data && data.weather && data.main) {
+                weatherOutput.innerHTML = `
+                    <h2>Wetter in ${data.name}</h2>
+                    <p>Temperatur: ${data.main.temp} °C</p>
+                    <p>Beschreibung: ${data.weather[0].description}</p>
+                    <p>Minimale Temperatur: ${data.main.temp_min} °C</p>
+                    <p>Maximale Temperatur: ${data.main.temp_max} °C</p>
+                    <p>Beschreibung: ${data.weather[0].description}</p> 
+                    <p>Luftdruck: ${data.main.pressure} hPa </p>
+                    <p>Windgeschwindigkeit: ${data.wind.speed} m/s </p>
+                    <p>Luftfeuchtigkeit: ${data.main.humidity} % </p>
+                  
+                        `;
+                        
+                    
+                weatherOutput.style.display = 'block'; // Ausgabe anzeigen
+            } else {
+                weatherOutput.innerHTML = `<p>Stadt nicht gefunden.</p>`;
+                weatherOutput.style.display = 'block'; // Ausgabe anzeigen
+            }
+        }
+    </script>
+</body>
+</html>
